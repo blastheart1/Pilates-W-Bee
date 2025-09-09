@@ -819,8 +819,7 @@ export default function SinglePageApp() {
       address:
         "123 Wellness Street, Mind & Body District, Makati City, Metro Manila",
       phone: "+63 (917) 123-4567",
-      image:
-        "/PilatesStudioimages/Studio1.png",
+      image: "/PilatesStudioImages/Studio1.jpeg",
       amenities: [
         "Private Showers",
         "Changing Rooms",
@@ -832,8 +831,7 @@ export default function SinglePageApp() {
       name: "Uptown Studio",
       address: "456 Serenity Ave, Wellness Quarter, Quezon City, Metro Manila",
       phone: "+63 (917) 123-4568",
-      image:
-        "/PilatesStudioimages/Studio2.png",
+      image: "/PilatesStudioImages/Studio2.jpeg",
       amenities: [
         "Outdoor Terrace",
         "Juice Bar",
