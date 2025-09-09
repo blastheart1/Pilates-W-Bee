@@ -820,7 +820,7 @@ export default function SinglePageApp() {
         "123 Wellness Street, Mind & Body District, Makati City, Metro Manila",
       phone: "+63 (917) 123-4567",
       image:
-        "Pilatesstudioimages/Studio1.png",
+        "PilatesStudioimages/Studio1.png",
       amenities: [
         "Private Showers",
         "Changing Rooms",
@@ -833,7 +833,7 @@ export default function SinglePageApp() {
       address: "456 Serenity Ave, Wellness Quarter, Quezon City, Metro Manila",
       phone: "+63 (917) 123-4568",
       image:
-        "Pilatesstudioimages/Studio2.png",
+        "PilatesStudioimages/Studio2.png",
       amenities: [
         "Outdoor Terrace",
         "Juice Bar",
