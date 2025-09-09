@@ -1,0 +1,42 @@
+# PWB Pilates Studio - Robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://pwbpilates.com/sitemap.xml
+
+# Specific rules for search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block access to admin areas (when implemented)
+Disallow: /admin/
+Disallow: /api/auth/
+Disallow: /dashboard/private/
+
+# Allow all public content
+Allow: /
+Allow: /about
+Allow: /classes
+Allow: /nutrition
+Allow: /pricing
+Allow: /contact
+Allow: /blog
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.webp
+Allow: *.svg
+
+# Optimize crawl budget
+User-agent: *
+Disallow: /search?
+Disallow: /*?
+Allow: /*?utm_*
