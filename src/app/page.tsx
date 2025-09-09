@@ -108,7 +108,7 @@ export default function SinglePageApp() {
       price: 4450,
       quantity: 1,
       image:
-        "PilatesShopImages/PilatesMat.jpg",
+        "/PilatesShopImages/PilatesMat.jpg",
       type: "physical",
     },
     {
@@ -117,7 +117,7 @@ export default function SinglePageApp() {
       price: 2250,
       quantity: 2,
       image:
-        "PilatesShopImages/ResistanceBandsSet.jpg",
+        "/PilatesShopImages/ResistanceBandsSet.jpg",
       type: "physical",
     },
   ]);
@@ -820,7 +820,7 @@ export default function SinglePageApp() {
         "123 Wellness Street, Mind & Body District, Makati City, Metro Manila",
       phone: "+63 (917) 123-4567",
       image:
-        "PilatesStudioimages/Studio1.png",
+        "/PilatesStudioimages/Studio1.png",
       amenities: [
         "Private Showers",
         "Changing Rooms",
@@ -833,7 +833,7 @@ export default function SinglePageApp() {
       address: "456 Serenity Ave, Wellness Quarter, Quezon City, Metro Manila",
       phone: "+63 (917) 123-4568",
       image:
-        "PilatesStudioimages/Studio2.png",
+        "/PilatesStudioimages/Studio2.png",
       amenities: [
         "Outdoor Terrace",
         "Juice Bar",
