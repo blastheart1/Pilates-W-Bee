@@ -633,7 +633,7 @@ export default function SinglePageApp() {
       rating: 5,
       text: "Bee transformed my approach to fitness. Her combination of Pilates and nutrition guidance helped me achieve results I never thought possible.",
       image:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&q=80&w=200&h=200",
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       achievement: "Lost 25lbs & gained core strength",
     },
     {
@@ -2868,7 +2868,7 @@ export default function SinglePageApp() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
             <div>
               <img
-                src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&q=80&w=600&h=600"
+                src="https://i.pinimg.com/736x/d6/b8/cf/d6b8cf6cf5ca2195fad2e1114d976c53.jpg"
                 alt="Bee - Certified Pilates Instructor"
                 className="w-full h-[600px] object-cover rounded-lg shadow-lg"
               />
