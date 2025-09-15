@@ -865,10 +865,17 @@ export default function SinglePageApp() {
     },
   ];
 // Custom Calendar Component
-const CustomCalendar = ({ selectedDate, onSelect, disabled }) => {
-  const [currentMonth, setCurrentMonth] = useState(selectedDate || new Date());
-  const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+interface CustomCalendarProps {
+  selectedDate?: Date
+  onSelect: (date: Date) => void
+  disabled?: (date: Date) => boolean
+}
+
+const CustomCalendar: React.FC<CustomCalendarProps> = ({ selectedDate, onSelect, disabled }) => {
+  const [currentMonth, setCurrentMonth] = useState<Date>(selectedDate || new Date())
+
+  const daysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  const firstDayOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay()
   
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -907,17 +914,25 @@ const CustomCalendar = ({ selectedDate, onSelect, disabled }) => {
     return days;
   };
   
-  const navigateMonth = (direction) => {
-    const newMonth = new Date(currentMonth);
-    newMonth.setMonth(newMonth.getMonth() + direction);
-    setCurrentMonth(newMonth);
-  };
-  
-  const handleDateClick = (dateObj) => {
-    if (!dateObj.isDisabled && onSelect) {
-      onSelect(dateObj.date);
-    }
-  };
+  const navigateMonth = (direction: number) => {
+  const newMonth = new Date(currentMonth)
+  newMonth.setMonth(newMonth.getMonth() + direction)
+  setCurrentMonth(newMonth)
+}
+
+interface CalendarDay {
+  day: number
+  date: Date
+  isDisabled: boolean
+  isSelected: boolean
+  isToday: boolean
+}
+
+const handleDateClick = (dateObj: CalendarDay | null) => {
+  if (dateObj && !dateObj.isDisabled) {
+    onSelect(dateObj.date)
+  }
+}
   
   const calendarDays = generateCalendarDays();
   
@@ -3329,45 +3344,47 @@ const CustomCalendar = ({ selectedDate, onSelect, disabled }) => {
 
       {/* Certifications & Affiliations Section */}
       <section id="certifications" className="py-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-light mb-4 tracking-widest uppercase">
-              Certifications & Affiliations
-            </h2>
-            <p className="text-lg text-gray-600">
-              Trusted by leading wellness organizations
-            </p>
-          </div>
+  <div className="max-w-6xl mx-auto px-8">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-light mb-4 tracking-widest uppercase">
+        Certifications & Affiliations
+      </h2>
+      <p className="text-lg text-gray-600">
+        Trusted by leading wellness organizations
+      </p>
+    </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {certifications.map((cert, index) => (
-              <div key={index} className="text-center group">
-                <div
-                  className={`${cert.color} rounded-lg p-6 mb-4 group-hover:scale-105 transition-all duration-300 shadow-md`}
-                >
-                  <img
-                    src={cert.logo}
-                    alt={cert.name}
-                    className="w-full h-20 object-cover mx-auto rounded"
-                  />
-                </div>
-                <h3 className="font-medium text-sm text-gray-800">
-                  {cert.name}
-                </h3>
-              </div>
-            ))}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      {certifications.map((cert, index) => (
+        <div key={index} className="text-center group">
+          <div
+            className={`${cert.color} rounded-lg p-6 mb-4 group-hover:scale-105 transition-all duration-300 shadow-md flex items-center justify-center`}
+          >
+            <img
+              src={cert.logo}
+              alt={cert.name}
+              className="max-h-20 w-auto mx-auto"
+              style={{ objectFit: 'contain' }}
+            />
           </div>
-
-          <div className="text-center mt-12">
-            <div className="inline-flex items-center space-x-2 bg-green-50 text-green-800 px-4 py-2 rounded-full">
-              <Shield className="text-green-600" size={16} />
-              <span className="text-sm font-medium">
-                All instructors are certified and insured
-              </span>
-            </div>
-          </div>
+          <h3 className="font-medium text-sm text-gray-800">
+            {cert.name}
+          </h3>
         </div>
-      </section>
+      ))}
+    </div>
+
+    <div className="text-center mt-12">
+      <div className="inline-flex items-center space-x-2 bg-green-50 text-green-800 px-4 py-2 rounded-full">
+        <Shield className="text-green-600" size={16} />
+        <span className="text-sm font-medium">
+          All instructors are certified and insured
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       {/* Testimonials Section */}
       <section id="testimonials" className="py-24 bg-white">
