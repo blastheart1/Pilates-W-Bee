@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
+import BookingModal from "@/components/ui/BookingComponent";
 import {
   Facebook,
   Instagram,
@@ -97,7 +97,8 @@ export default function SinglePageApp() {
   const [cartOverlay, setCartOverlay] = useState(false);
   const [memberPortalOverlay, setMemberPortalOverlay] = useState(false);
   const [analyticsOverlay, setAnalyticsOverlay] = useState(false);
-
+  const [recurring, setRecurring] = useState("none");
+  const [showBooking, setShowBooking] = useState(false);
   // App States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -863,7 +864,143 @@ export default function SinglePageApp() {
       color: "bg-orange-100",
     },
   ];
+// Custom Calendar Component
+const CustomCalendar = ({ selectedDate, onSelect, disabled }) => {
+  const [currentMonth, setCurrentMonth] = useState(selectedDate || new Date());
+  const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const firstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  
+  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  
+  const generateCalendarDays = () => {
+    const days = [];
+    const totalDays = daysInMonth(currentMonth);
+    const firstDay = firstDayOfMonth(currentMonth);
+    
+    // Empty cells for days before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+      days.push(null);
+    }
+    
+    // Days of the month
+    for (let day = 1; day <= totalDays; day++) {
+      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+      const isDisabled = disabled && disabled(date);
+      const isSelected = selectedDate && 
+        date.toDateString() === selectedDate.toDateString();
+      const isToday = date.toDateString() === new Date().toDateString();
+      
+      days.push({
+        day,
+        date,
+        isDisabled,
+        isSelected,
+        isToday
+      });
+    }
+    
+    return days;
+  };
+  
+  const navigateMonth = (direction) => {
+    const newMonth = new Date(currentMonth);
+    newMonth.setMonth(newMonth.getMonth() + direction);
+    setCurrentMonth(newMonth);
+  };
+  
+  const handleDateClick = (dateObj) => {
+    if (!dateObj.isDisabled && onSelect) {
+      onSelect(dateObj.date);
+    }
+  };
+  
+  const calendarDays = generateCalendarDays();
+  
+  return (
+    <div className="bg-white border rounded-lg p-4 w-full">
+      {/* Calendar Header */}
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={() => navigateMonth(-1)}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        
+        <h3 className="text-lg font-semibold">
+          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+        </h3>
+        
+        <button
+          onClick={() => navigateMonth(1)}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      
+      {/* Weekday Headers */}
+      <div className="grid grid-cols-7 gap-1 mb-2">
+        {weekDays.map((day) => (
+          <div
+            key={day}
+            className="text-center text-sm font-medium text-gray-500 py-2"
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+      
+      {/* Calendar Days */}
+      <div className="grid grid-cols-7 gap-1">
+        {calendarDays.map((dateObj, index) => (
+          <div
+            key={index}
+            className={`
+              aspect-square flex items-center justify-center text-sm cursor-pointer rounded-lg transition-all
+              ${!dateObj ? '' : 
+                dateObj.isDisabled ? 'text-gray-300 cursor-not-allowed' :
+                dateObj.isSelected ? 'bg-pink-600 text-white font-semibold' :
+                dateObj.isToday ? 'bg-blue-100 text-blue-800 font-semibold' :
+                'hover:bg-gray-100 text-gray-700'
+              }
+            `}
+            onClick={() => dateObj && handleDateClick(dateObj)}
+          >
+            {dateObj ? dateObj.day : ''}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
+{/* Calendar Section - Refactored */}
+<div className="bg-gray-50 p-6 rounded-lg">
+  <h3 className="text-xl font-medium mb-4 flex items-center">
+    <CalendarIcon className="mr-2 text-pink-600" size={20} />
+    Select Date
+  </h3>
+  
+  <div className="w-full">
+    <CustomCalendar
+      selectedDate={selectedDate}
+      onSelect={setSelectedDate}
+      disabled={(date) => date < new Date()}
+    />
+  </div>
+
+  
+</div>
   // Mobile-Responsive Overlay Component
   const Overlay = ({
     isOpen,
@@ -1155,15 +1292,7 @@ export default function SinglePageApp() {
                 >
                   Enroll Now
                 </button>
-                <button
-                  onClick={() => {
-                    setBookingOverlay(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full border border-white text-white hover:bg-white hover:text-black py-4 px-6 rounded-full text-lg font-medium tracking-[0.2em] uppercase transition-all"
-                >
-                  Book Class
-                </button>
+                
                 {isLoggedIn && (
                   <button
                     onClick={() => {
@@ -1260,17 +1389,20 @@ export default function SinglePageApp() {
           <span className="font-medium text-sm sm:hidden">Enroll</span>
         </button>
         <button
-          onClick={() => setBookingOverlay(true)}
-          className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-300 hover:scale-105 min-h-[44px]"
-          aria-label="Book a Pilates class"
-        >
-          <CalendarDays size={16} />
-          <span className="font-medium text-sm sm:text-base hidden sm:inline">
-            Book Class
-          </span>
-          <span className="font-medium text-sm sm:hidden">Book</span>
-        </button>
-      </div>
+  onClick={() => setShowBooking(true)}
+  className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-300 hover:scale-105 min-h-[44px]"
+  aria-label="Book a Pilates class"
+>
+  <CalendarDays size={16} />
+  <span className="font-medium text-sm sm:text-base hidden sm:inline">
+    Book Class
+  </span>
+  <span className="font-medium text-sm sm:hidden">Book</span>
+</button>
+
+{/* Modal should be rendered separately */}
+{showBooking && <BookingModal isOpen={showBooking} onClose={() => setShowBooking(false)} />}
+    </div>
 
       {/* Hero Section - Mobile Optimized */}
       <section
@@ -1330,13 +1462,18 @@ export default function SinglePageApp() {
                 Enroll Now
               </EnhancedButton>
               <EnhancedButton
-                onClick={() => setBookingOverlay(true)}
-                className="w-full sm:w-auto bg-pink-600 hover:bg-pink-700 text-white px-8 sm:px-12 lg:px-20 py-4 sm:py-4 text-sm sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] transition-all uppercase font-light min-h-[48px] flex items-center justify-center"
-                loading={loading}
-                aria-label="Book a Pilates class at PWB Studio"
-              >
-                Book Class
-              </EnhancedButton>
+        onClick={() => setBookingOverlay(true)}
+        className="w-full sm:w-auto bg-pink-600 hover:bg-pink-700 text-white px-8 sm:px-12 lg:px-20 py-4 sm:py-4 text-sm sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] transition-all uppercase font-light min-h-[48px] flex items-center justify-center"
+        loading={loading}
+        aria-label="Book a Pilates class at PWB Studio"
+      >
+        Book Class
+      </EnhancedButton>
+
+      <BookingModal
+        isOpen={bookingOverlay}
+        onClose={() => setBookingOverlay(false)}
+      />
             </div>
 
             {/* Responsive Tagline */}
@@ -1608,57 +1745,56 @@ export default function SinglePageApp() {
         <div className="p-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Calendar Section */}
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-medium mb-4 flex items-center">
-                <CalendarIcon className="mr-2 text-pink-600" size={20} />
-                Select Date
-              </h3>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                className="rounded-md border w-full"
-                disabled={(date) => date < new Date()}
-              />
-
-              {/* Recurring Options */}
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <div className="bg-gray-50 p-6 rounded-lg overflow-auto">
+  <h3 className="text-xl font-medium mb-4 flex items-center">
+    <CalendarIcon className="mr-2 text-pink-600" size={20} />
+    Select Date
+  </h3>
+  
+  <div className="w-full">
+    <CustomCalendar
+      selectedDate={selectedDate}
+      onSelect={setSelectedDate}
+      disabled={(date) => date < new Date()}
+    />
+  </div>
+  <div className="mt-3 p-4 bg-blue-50 rounded-lg w-full">
                 <h4 className="font-medium mb-3 flex items-center">
                   <Repeat className="mr-2 text-blue-600" size={16} />
                   Recurring Booking Options
                 </h4>
-                <div className="space-y-2">
+                <div className="space-y-2 text-sm">
                   <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="recurring"
-                      value="none"
-                      className="mr-2"
-                      defaultChecked
-                    />
+                    <input type="radio" name="recurring" value="none" className="mr-2" defaultChecked />
                     One-time booking
                   </label>
                   <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="recurring"
-                      value="weekly"
-                      className="mr-2"
-                    />
+                    <input type="radio" name="recurring" value="weekly" className="mr-2" />
                     Same time weekly (4 weeks)
                   </label>
                   <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="recurring"
-                      value="monthly"
-                      className="mr-2"
-                    />
+                    <input type="radio" name="recurring" value="monthly" className="mr-2" />
                     Same time monthly (3 months)
                   </label>
                 </div>
               </div>
-            </div>
+              {/* Cancellation Policy */}
+              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mt-4">
+                <h4 className="font-medium mb-2 flex items-center text-yellow-800">
+                  <AlertCircle className="mr-2" size={16} />
+                  Cancellation Policy
+                </h4>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  <li>• Cancel up to 24 hours before class for full credit</li>
+                  <li>• 12-24 hours: 50% credit to your account</li>
+                  <li>
+                    • Less than 12 hours: No refund (emergency exceptions
+                    considered)
+                  </li>
+                  <li>• Recurring bookings can be paused anytime</li>
+                </ul>
+              </div>
+</div>
 
             {/* Time Slots & Advanced Features */}
             <div className="space-y-6">
@@ -1717,22 +1853,7 @@ export default function SinglePageApp() {
                 )}
               </div>
 
-              {/* Cancellation Policy */}
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <h4 className="font-medium mb-2 flex items-center text-yellow-800">
-                  <AlertCircle className="mr-2" size={16} />
-                  Cancellation Policy
-                </h4>
-                <ul className="text-sm text-yellow-700 space-y-1">
-                  <li>• Cancel up to 24 hours before class for full credit</li>
-                  <li>• 12-24 hours: 50% credit to your account</li>
-                  <li>
-                    • Less than 12 hours: No refund (emergency exceptions
-                    considered)
-                  </li>
-                  <li>• Recurring bookings can be paused anytime</li>
-                </ul>
-              </div>
+              
 
               <Button
                 className="w-full bg-pink-600 hover:bg-pink-700 text-white text-lg py-4 rounded-lg font-medium"
