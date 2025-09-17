@@ -6,7 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import BookingModal from "@/components/ui/BookingComponent";
+import BookingModal from "@/components/BookingComponent";
+import MobileMenuOverlay from "@/components/ui/MobileMenuOverlay"
+import EnrollNowForm from "@/components/EnrollNowForm"
+import EnhancedButton from "@/components/ui/enhanced-button"
+import LoadingSpinner from "@/components/ui/loading-spinner";
+import MeetBee from "@/components/MeetBee"
+import ECommerceSection from "@/components/eCommerceSection"
+import CartOverlay from "@/components/CartOverlay"
+
 import {
   Facebook,
   Instagram,
@@ -97,11 +105,9 @@ export default function SinglePageApp() {
   const [cartOverlay, setCartOverlay] = useState(false);
   const [memberPortalOverlay, setMemberPortalOverlay] = useState(false);
   const [analyticsOverlay, setAnalyticsOverlay] = useState(false);
-  const [recurring, setRecurring] = useState("none");
   const [showBooking, setShowBooking] = useState(false);
   // App States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -111,7 +117,7 @@ export default function SinglePageApp() {
       image:
         "/PilatesShopImages/PilatesMat.jpg",
       type: "physical",
-    },
+    }, 
     {
       id: 2,
       name: "Resistance Bands Set",
@@ -277,36 +283,9 @@ export default function SinglePageApp() {
   );
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Loading Spinner Component
-  const LoadingSpinner = ({ size = 20 }: { size?: number }) => (
-    <div className="flex justify-center items-center">
-      <div
-        className="animate-spin rounded-full border-b-2 border-current"
-        style={{ width: size, height: size }}
-      />
-    </div>
-  );
+  
 
-  // Enhanced Button Component with Loading State
-  const EnhancedButton = ({
-    children,
-    onClick,
-    loading: buttonLoading = false,
-    className = "",
-    disabled = false,
-    ...props
-  }: any) => (
-    <button
-      onClick={onClick}
-      disabled={disabled || buttonLoading}
-      className={`relative transition-all duration-300 hover:scale-105 active:scale-95 ${className} ${
-        disabled || buttonLoading ? "opacity-70 cursor-not-allowed" : ""
-      }`}
-      {...props}
-    >
-      {buttonLoading ? <LoadingSpinner /> : children}
-    </button>
-  );
+  
 
   // Error Boundary Component
   const ErrorBoundary = ({
@@ -331,115 +310,7 @@ export default function SinglePageApp() {
     return <>{children}</>;
   };
 
-  // Client-side Instagram Feed Component
-  const InstagramFeed = () => {
-    const [feedLoaded, setFeedLoaded] = useState(false);
-    const [feedError, setFeedError] = useState(false);
-
-    useEffect(() => {
-      if (!isMounted || !instagramLoaded) return;
-
-      try {
-        // Load Elfsight script dynamically
-        const script = document.createElement("script");
-        script.src = "https://static.elfsight.com/platform/platform.js";
-        script.async = true;
-        script.defer = true;
-        script.onload = () => {
-          setTimeout(() => setFeedLoaded(true), 2000);
-        };
-        script.onerror = () => {
-          setFeedError(true);
-        };
-        document.head.appendChild(script);
-
-        return () => {
-          // Cleanup script on unmount
-          try {
-            const existingScript = document.querySelector(
-              'script[src="https://static.elfsight.com/platform/platform.js"]',
-            );
-            if (existingScript) {
-              existingScript.remove();
-            }
-          } catch (error) {
-            console.warn("Error cleaning up Instagram script:", error);
-          }
-        };
-      } catch (error) {
-        console.warn("Error loading Instagram feed:", error);
-        setFeedError(true);
-      }
-    }, [isMounted, instagramLoaded]);
-
-    if (!isMounted || !instagramLoaded) {
-      return (
-        <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-          <div className="text-center">
-            <LoadingSpinner size={32} />
-            <p className="mt-4 text-gray-600">Loading Instagram feed...</p>
-          </div>
-        </div>
-      );
-    }
-
-    if (feedError) {
-      return (
-        <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-          <div className="text-center">
-            <Instagram className="mx-auto mb-4 text-gray-400" size={48} />
-            <p className="text-gray-600">Unable to load Instagram feed</p>
-            <a
-              href="https://instagram.com/the_hapi_bee/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-pink-600 hover:text-pink-700 font-medium mt-2 inline-block"
-            >
-              View on Instagram →
-            </a>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <ErrorBoundary
-        fallback={
-          <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-            <div className="text-center">
-              <Instagram className="mx-auto mb-4 text-gray-400" size={48} />
-              <p className="text-gray-600">
-                Instagram feed temporarily unavailable
-              </p>
-              <a
-                href="https://instagram.com/the_hapi_bee/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-pink-600 hover:text-pink-700 font-medium mt-2 inline-block"
-              >
-                View on Instagram →
-              </a>
-            </div>
-          </div>
-        }
-      >
-        <div className="w-full">
-          <div
-            className="elfsight-app-9c50c023-a35e-4c59-91b4-28120ab48c98"
-            data-elfsight-app-lazy
-          />
-          {!feedLoaded && (
-            <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center rounded-lg">
-              <div className="text-center">
-                <LoadingSpinner size={24} />
-                <p className="mt-2 text-gray-600 text-sm">Loading posts...</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </ErrorBoundary>
-    );
-  };
+ 
 
   const membershipPlans = [
     {
@@ -937,12 +808,12 @@ export default function SinglePageApp() {
             <div className="flex md:hidden w-full justify-between items-center">
               {/* Mobile Hamburger Menu */}
               <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="w-11 h-11 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/30 transition-all"
-                aria-label="Toggle mobile menu"
-              >
-                <Menu size={20} />
-              </button>
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="w-11 h-11 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/30 transition-all"
+              aria-label="Toggle mobile menu"
+            >
+              <Menu size={10} />
+            </button>
 
               {/* Mobile PWB Logo */}
               <button
@@ -1085,126 +956,15 @@ export default function SinglePageApp() {
           </div>
         </div>
 
-        {/* Mobile Menu Overlay */}
-        <div
-          className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-md transition-all duration-300 ${
-            mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
-        >
-          <div className="flex flex-col h-full">
-            {/* Mobile Menu Header */}
-            <div className="flex justify-between items-center p-6 border-b border-white/10">
-              <button
-                onClick={() => scrollToSection("home")}
-                className="text-3xl font-light tracking-[0.3em] text-white"
-              >
-                PWB
-              </button>
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all"
-                aria-label="Close mobile menu"
-              >
-                <X size={20} />
-              </button>
-            </div>
+        <MobileMenuOverlay
+  mobileMenuOpen={mobileMenuOpen}
+  setMobileMenuOpen={setMobileMenuOpen}
+  scrollToSection={scrollToSection}
+  activeSection={activeSection}
+  setMemberPortalOverlay={setMemberPortalOverlay}
+  handleLogout={() => setIsLoggedIn(false)} // optional, keeps your parent state in sync
+/>
 
-            {/* Mobile Menu Content */}
-            <div className="flex-1 flex flex-col justify-center px-8 space-y-8">
-              <button
-                onClick={() => scrollToSection("meet-bee")}
-                className={`text-left text-2xl font-light tracking-[0.2em] text-white hover:text-pink-400 transition-all uppercase py-4 border-b border-white/10 ${
-                  activeSection === "meet-bee" ? "text-pink-400" : ""
-                }`}
-              >
-                Meet Bee
-              </button>
-
-              <button
-                onClick={() => scrollToSection("testimonials")}
-                className={`text-left text-2xl font-light tracking-[0.2em] text-white hover:text-pink-400 transition-all uppercase py-4 border-b border-white/10 ${
-                  activeSection === "testimonials" ? "text-pink-400" : ""
-                }`}
-              >
-                Testimonials
-              </button>
-
-              <button
-                onClick={() => scrollToSection("faqs")}
-                className={`text-left text-2xl font-light tracking-[0.2em] text-white hover:text-pink-400 transition-all uppercase py-4 border-b border-white/10 ${
-                  activeSection === "faqs" ? "text-pink-400" : ""
-                }`}
-              >
-                FAQs
-              </button>
-
-              <button
-                onClick={() => scrollToSection("contact")}
-                className={`text-left text-2xl font-light tracking-[0.2em] text-white hover:text-pink-400 transition-all uppercase py-4 border-b border-white/10 ${
-                  activeSection === "contact" ? "text-pink-400" : ""
-                }`}
-              >
-                Contact
-              </button>
-
-              {/* Mobile Menu Action Buttons */}
-              <div className="space-y-4 pt-8">
-                <button
-                  onClick={() => {
-                    setEnrollOverlay(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-pink-600 hover:bg-pink-700 text-white py-4 px-6 rounded-full text-lg font-medium tracking-[0.2em] uppercase transition-all"
-                >
-                  Enroll Now
-                </button>
-                
-                {isLoggedIn && (
-                  <button
-                    onClick={() => {
-                      setMemberPortalOverlay(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full border border-pink-600 text-pink-400 hover:bg-pink-600 hover:text-white py-4 px-6 rounded-full text-lg font-medium tracking-[0.2em] uppercase transition-all"
-                  >
-                    Member Portal
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Mobile Menu Footer - Social Links */}
-            <div className="flex justify-center space-x-8 p-8 border-t border-white/10">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-pink-600 hover:text-white transition-all"
-                aria-label="Follow us on Facebook"
-              >
-                <Facebook size={20} />
-              </a>
-              <a
-                href="https://instagram.com/the_hapi_bee/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-pink-600 hover:text-white transition-all"
-                aria-label="Follow us on Instagram"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="https://tiktok.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-pink-600 hover:text-white transition-all"
-                aria-label="Follow us on TikTok"
-              >
-                <Music size={20} />
-              </a>
-            </div>
-          </div>
-        </div>
       </nav>
 
       {/* WhatsApp Quick Contact Button - Mobile Optimized */}
@@ -1231,40 +991,56 @@ export default function SinglePageApp() {
         <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
       </a>
 
-      {/* Floating Action Buttons - Mobile Optimized */}
-      <div
-        className={`fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-40 flex flex-col space-y-3 sm:space-y-4 transition-all duration-500 ${
-          showFloatingButtons
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-8 pointer-events-none"
-        }`}
-        style={{
-          bottom: "max(1rem, env(safe-area-inset-bottom))",
-          right: "max(1rem, env(safe-area-inset-right))",
-        }}
-      >
-        <button
-          onClick={() => setEnrollOverlay(true)}
-          className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-300 hover:scale-105 min-h-[44px]"
-          aria-label="Enroll in PWB Pilates classes"
-        >
-          <UserPlus size={16} />
-          <span className="font-medium text-sm sm:text-base hidden sm:inline">
-            Enroll Now
-          </span>
-          <span className="font-medium text-sm sm:hidden">Enroll</span>
-        </button>
-        <button
-  onClick={() => setShowBooking(true)}
-  className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-300 hover:scale-105 min-h-[44px]"
-  aria-label="Book a Pilates class"
+<div
+  className={`fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-40 flex flex-col space-y-3 sm:space-y-4 transition-all duration-500 ${
+    showFloatingButtons
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-8 pointer-events-none"
+  }`}
+  style={{
+    bottom: "max(1rem, env(safe-area-inset-bottom))",
+    right: "max(1rem, env(safe-area-inset-right))",
+  }}
 >
-  <CalendarDays size={16} />
-  <span className="font-medium text-sm sm:text-base hidden sm:inline">
-    Book Class
-  </span>
-  <span className="font-medium text-sm sm:hidden">Book</span>
-</button>
+  { (
+    <button
+      onClick={() => setMemberPortalOverlay(true)}
+      className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-300 hover:scale-105 min-h-[44px]"
+      aria-label="Go to Member Portal"
+    >
+      <User size={16} />
+      <span className="font-medium text-sm sm:text-base hidden sm:inline">
+        Member Portal
+      </span>
+      <span className="font-medium text-sm sm:hidden">Portal</span>
+    </button>
+  )}
+
+  <button
+    onClick={() => setEnrollOverlay(true)}
+    className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-300 hover:scale-105 min-h-[44px]"
+    aria-label="Enroll in PWB Pilates classes"
+  >
+    <UserPlus size={16} />
+    <span className="font-medium text-sm sm:text-base hidden sm:inline">
+      Enroll Now
+    </span>
+    <span className="font-medium text-sm sm:hidden">Enroll</span>
+  </button>
+
+  <button
+    onClick={() => setShowBooking(true)}
+    className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-300 hover:scale-105 min-h-[44px]"
+    aria-label="Book a Pilates class"
+  >
+    <CalendarDays size={16} />
+    <span className="font-medium text-sm sm:text-base hidden sm:inline">
+      Book Class
+    </span>
+    <span className="font-medium text-sm sm:hidden">Book</span>
+  </button>
+
+
 
 {/* Modal should be rendered separately */}
 {showBooking && <BookingModal isOpen={showBooking} onClose={() => setShowBooking(false)} />}
@@ -1362,335 +1138,31 @@ export default function SinglePageApp() {
         <meta itemProp="priceRange" content="₱₱" />
       </section>
 
-      {/* Enroll Now Overlay */}
-      <Overlay
-        isOpen={enrollOverlay}
-        onClose={() => setEnrollOverlay(false)}
-        title="Welcome to PWB"
-      >
-        <div className="p-8">
-          <div className="text-center mb-8">
-            <p className="text-lg text-gray-600">
-              Begin your wellness journey with our comprehensive pre-assessment
-            </p>
-          </div>
-
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              setLoading(true);
-
-              // Simulate API call
-              await new Promise((resolve) => setTimeout(resolve, 2000));
-
-              // Track conversion for analytics
-              if (typeof gtag !== "undefined") {
-                gtag("event", "form_submit", {
-                  event_category: "engagement",
-                  event_label: "enrollment_form",
-                });
-              }
-
-              alert(
-                "Thank you for enrolling! We'll contact you within 24 hours to schedule your complimentary consultation.",
-              );
-              setLoading(false);
-              setEnrollOverlay(false);
-            }}
-            className="space-y-8 text-gray-900"
-          >
-            {/* Personal Information */}
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-medium mb-4 flex items-center">
-                <Users className="mr-2 text-pink-600" size={20} />
-                Personal Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="firstName" className="font-medium">
-                    First Name *
-                  </Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="lastName" className="font-medium">
-                    Last Name *
-                  </Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email" className="font-medium">
-                    Email Address *
-                  </Label>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone" className="font-medium">
-                    Phone Number *
-                  </Label>
-                  <Input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Health & Fitness Assessment */}
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-medium mb-4 flex items-center">
-                <Activity className="mr-2 text-pink-600" size={20} />
-                Health & Fitness Assessment
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="experience" className="font-medium">
-                    Pilates Experience *
-                  </Label>
-                  <select
-                    id="experience"
-                    name="experience"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-                    required
-                  >
-                    <option value="">Select your level</option>
-                    <option value="beginner">Complete Beginner</option>
-                    <option value="some">Some Experience (1-6 months)</option>
-                    <option value="intermediate">
-                      Intermediate (6+ months)
-                    </option>
-                    <option value="advanced">Advanced (2+ years)</option>
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="fitnessLevel" className="font-medium">
-                    Overall Fitness Level *
-                  </Label>
-                  <select
-                    id="fitnessLevel"
-                    name="fitnessLevel"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-                    required
-                  >
-                    <option value="">Select level</option>
-                    <option value="sedentary">Sedentary</option>
-                    <option value="lightly-active">Lightly Active</option>
-                    <option value="moderately-active">Moderately Active</option>
-                    <option value="very-active">Very Active</option>
-                  </select>
-                </div>
-              </div>
-              <div className="mt-4">
-                <Label htmlFor="healthConditions" className="font-medium">
-                  Health Conditions & Injuries
-                </Label>
-                <Textarea
-                  id="healthConditions"
-                  name="healthConditions"
-                  rows={3}
-                  placeholder="Please list any current or past injuries, surgeries, chronic conditions, or physical limitations we should be aware of..."
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            {/* Goals & Wearable Integration */}
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-medium mb-4 flex items-center">
-                <Target className="mr-2 text-pink-600" size={20} />
-                Goals & Tracking Preferences
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="goals" className="font-medium">
-                    Primary Fitness Goals *
-                  </Label>
-                  <Textarea
-                    id="goals"
-                    name="goals"
-                    rows={3}
-                    placeholder="What do you hope to achieve? (e.g., improve flexibility, build core strength, reduce stress, lose weight, recover from injury, etc.)"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="font-medium">
-                    Do you use any fitness tracking devices?
-                  </Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="wearables"
-                        value="fitbit"
-                        className="mr-2"
-                      />
-                      <Smartphone size={16} className="mr-1" />
-                      Fitbit
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="wearables"
-                        value="apple-watch"
-                        className="mr-2"
-                      />
-                      <Watch size={16} className="mr-1" />
-                      Apple Watch
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="wearables"
-                        value="garmin"
-                        className="mr-2"
-                      />
-                      <Activity size={16} className="mr-1" />
-                      Garmin
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="wearables"
-                        value="other"
-                        className="mr-2"
-                      />
-                      Other Device
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-center pt-4">
-              <EnhancedButton
-                type="submit"
-                loading={loading}
-                className="w-full md:w-auto bg-pink-600 hover:bg-pink-700 text-white text-lg py-4 px-12 rounded-lg font-medium"
-                disabled={loading}
-              >
-                {loading
-                  ? "Processing..."
-                  : "Complete Pre-Assessment & Schedule Consultation"}
-              </EnhancedButton>
-              <p className="text-sm text-gray-600 mt-3">
-                We'll review your information and contact you within 24 hours to
-                schedule your complimentary consultation
-              </p>
-            </div>
-          </form>
-        </div>
-      </Overlay>
+      <EnrollNowForm
+  enrollOverlay={enrollOverlay}
+  setEnrollOverlay={setEnrollOverlay}
+/>
 
       
 
-      {/* Enhanced Shopping Cart Overlay - Mobile Responsive */}
-      <Overlay
+      <>
+      {/* Meet Bee Section */}
+      <MeetBee />
+      
+      <main>
+  {/* ✅ Pass addToCart as a prop inside the tag */}
+  <CartOverlay
         isOpen={cartOverlay}
         onClose={() => setCartOverlay(false)}
-        title="Shopping Cart"
-      >
-        <div className="p-4 sm:p-6 lg:p-8">
-          {cartItems.length === 0 ? (
-            <div className="text-center py-8 sm:py-12">
-              <ShoppingCart className="mx-auto mb-4 text-gray-400" size={48} />
-              <p className="text-gray-600">Your cart is empty</p>
-            </div>
-          ) : (
-            <div className="space-y-4 sm:space-y-6">
-              {cartItems.map((item) => (
-                <div key={item.id} className="border-b border-gray-200 pb-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-20 h-20 sm:w-16 sm:h-16 object-cover rounded-lg mx-auto sm:mx-0 flex-shrink-0"
-                    />
-                    <div className="flex-1 text-center sm:text-left min-w-0">
-                      <h4 className="font-medium text-sm sm:text-base">
-                        {item.name}
-                      </h4>
-                      <p className="text-gray-600 text-sm">
-                        ₱{item.price.toLocaleString()}
-                      </p>
-                      {item.type && (
-                        <span className="text-xs bg-gray-100 px-2 py-1 rounded capitalize mt-1 inline-block">
-                          {item.type}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Mobile Layout: Stacked */}
-                    <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => updateCartQuantity(item.id, -1)}
-                          className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors touch-target"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="w-8 text-center font-medium">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => updateCartQuantity(item.id, 1)}
-                          className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors touch-target"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus size={14} />
-                        </button>
-                      </div>
-
-                      <div className="text-center sm:text-right">
-                        <p className="font-medium text-sm sm:text-base">
-                          ₱{(item.price * item.quantity).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              <div className="border-t border-gray-200 pt-4">
-                <div className="flex justify-between items-center text-lg sm:text-xl font-medium">
-                  <span>Total:</span>
-                  <span>₱{cartTotal.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <Button className="bg-gray-600 hover:bg-gray-700 text-white touch-target py-3 text-sm sm:text-base">
-                  Continue Shopping
-                </Button>
-                <Button className="bg-pink-600 hover:bg-pink-700 text-white touch-target py-3 text-sm sm:text-base">
-                  Proceed to Checkout
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </Overlay>
+        cartItems={cartItems}
+        updateCartQuantity={updateCartQuantity}
+        cartTotal={cartTotal}
+      />
+  <ECommerceSection addToCart={addToCart} />
+</main>
+      
+      
+    </>
 
       {/* Member Portal Overlay - Mobile Responsive */}
       <Overlay
@@ -2713,88 +2185,7 @@ export default function SinglePageApp() {
       </section>
 
       {/* Meet Bee Section */}
-      <section id="meet-bee" className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-4xl font-light mb-16 tracking-widest text-center uppercase">
-            Meet Bee
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
-            <div>
-              <img
-                src="https://i.pinimg.com/736x/d6/b8/cf/d6b8cf6cf5ca2195fad2e1114d976c53.jpg"
-                alt="Bee - Certified Pilates Instructor"
-                className="w-full h-[600px] object-cover rounded-lg shadow-lg"
-              />
-            </div>
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4 mb-8">
-                <Award className="text-pink-600" size={32} />
-                <h3 className="text-2xl font-light uppercase tracking-wider">
-                  Certified Professional
-                </h3>
-              </div>
-
-              <p className="text-lg leading-relaxed text-gray-700">
-                Bee is a Certified BASI Pilates Instructor and a board certified
-                Nutritionist Dietitian (RND) with a passion for mindful movement
-                and sustainable wellness. Her unique approach blends the
-                strength and precision of Pilates with the science of nutrition
-                to help you achieve lasting results from the inside out.
-              </p>
-
-              <p className="text-lg leading-relaxed text-gray-700">
-                By combining movement and proper nourishment, Bee empowers you
-                to feel stronger, more energized, and fully supported in your
-                wellness journey. Whether you're looking to improve posture,
-                build core strength, or make healthier lifestyle choices, Bee is
-                here to guide you with clarity, care, and a whole lot of good
-                energy.
-              </p>
-
-              <div className="grid grid-cols-2 gap-6 mt-8">
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Users className="mx-auto mb-2 text-pink-600" size={24} />
-                  <div className="font-semibold">500+</div>
-                  <div className="text-sm text-gray-600">Happy Clients</div>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Heart className="mx-auto mb-2 text-pink-600" size={24} />
-                  <div className="font-semibold">8 Years</div>
-                  <div className="text-sm text-gray-600">Experience</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Instagram Feed Section */}
-          <div className="border-t border-gray-200 pt-16">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center space-x-3 mb-4">
-                <Instagram className="text-pink-600" size={28} />
-                <h3 className="text-3xl font-light uppercase tracking-wider">
-                  Follow the Journey
-                </h3>
-              </div>
-              <p className="text-gray-600">
-                Get daily inspiration and wellness tips on Instagram
-              </p>
-              <a
-                href="https://instagram.com/the_hapi_bee/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 text-pink-600 hover:text-pink-700 font-medium"
-              >
-                @the_hapi_bee
-              </a>
-            </div>
-
-            {/* Client-side Instagram Feed */}
-            <div className="w-full relative">
-              <InstagramFeed />
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Enhanced E-commerce Section */}
       <section className="py-24 bg-gray-50">

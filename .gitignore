@@ -124,3 +124,10 @@ temp/
 coverage/
 test-results/
 playwright-report/
+
+# Local environment variables
+.env.local
+
+# Environment variables
+.env*
+!.env.example
